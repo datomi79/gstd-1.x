@@ -148,7 +148,7 @@ main (gint argc, gchar * argv[])
   GstdSession *session;
   gboolean version = FALSE;
   gboolean kill = FALSE;
-  gboolean nodaemon = FALSE;
+  gboolean daemon = FALSE;
   gboolean quiet = FALSE;
   const gchar *gstdlogfile = NULL;
   const gchar *gstlogfile = NULL;
@@ -182,8 +182,8 @@ main (gint argc, gchar * argv[])
     {"quiet", 'q', 0, G_OPTION_ARG_NONE, &quiet,
         "Don't print any startup message", NULL}
     ,
-    {"no-daemon", 'D', 0, G_OPTION_ARG_NONE, &nodaemon,
-        "Do not detach into a daemon", NULL}
+    {"daemon", 'e', 0, G_OPTION_ARG_NONE, &daemon,
+        "Detach into a daemon", NULL}
     ,
     {"pid-path", 'f', 0, G_OPTION_ARG_FILENAME, &pidfile,
         "Create gstd.pid file into path", NULL}
@@ -217,8 +217,10 @@ main (gint argc, gchar * argv[])
   }
   g_option_context_free (context);
 
-  gstd_log_init (gstdlogfile, gstlogfile);
-  gstd_daemon_init (argc, argv, pidfile);
+  if (daemon || kill) {
+    gstd_log_init (gstdlogfile, gstlogfile);
+    gstd_daemon_init (argc, argv, pidfile);
+  }
 
   /* Print the version and exit */
   if (version) {
@@ -233,7 +235,7 @@ main (gint argc, gchar * argv[])
     goto out;
   }
 
-  if (nodaemon) {
+  if (!daemon) {
     print_header (quiet);
   } else {
     gboolean parent;
