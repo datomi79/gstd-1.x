@@ -231,7 +231,15 @@ class GstdClient:
                             GstdErrorCode.GSTD_IPC_ERROR)\
                 from e
         except TypeError as e:
-            raise GstcError('Bad command', -1) from e
+            raise GstcError('Gst Client Bad command',
+                            GstcErrorCode.GSTC_NULL_ARGUMENT) from e
+        except BufferError as e:
+            raise GstcError('Gst Client received a buffer bigger ' +
+                            'than the maximum size allowed',
+                            GstcErrorCode.GSTC_SEND_ERROR) from e
+        except TimeoutError as e:
+            raise GstcError('Gst Client time our ocurred',
+                            GstcErrorCode.GSTC_SEND_ERROR) from e
 
     def ping_gstd(self):
         """
@@ -252,8 +260,8 @@ class GstdClient:
             result = json.loads(jresult)
             if ('description' in result and
                result['description'] != 'Success'):
-                raise GstdError("GStreamer Daemon bad response",
-                                GstdErrorCode.GSTD_IPC_ERROR)
+                raise GstdError('GStreamer Daemon bad response',
+                                result['code'])
 
         except json.JSONDecodeError as e:
             self._logger.error('GStreamer Daemon corrupted response')
@@ -263,6 +271,13 @@ class GstdClient:
             self._logger.error('Error contacting GST Daemon')
             raise GstcError('Error contacting GST Daemon',
                             GstcErrorCode.GSTC_UNREACHABLE) from e
+        except BufferError as e:
+            raise GstcError('Gst Client received a buffer bigger ' +
+                            'than the maximum size allowed',
+                            GstcErrorCode.GSTC_SEND_ERROR) from e
+        except TimeoutError as e:
+            raise GstcError('Gst Client time our ocurred',
+                            GstcErrorCode.GSTC_SEND_ERROR) from e
 
     def bus_filter(self, pipe_name, filter):
         """
