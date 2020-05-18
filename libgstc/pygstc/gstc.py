@@ -32,7 +32,7 @@ import inspect
 import json
 import traceback
 
-from pygstc.gstcerror import GstdError, GstcError
+from pygstc.gstcerror import GstdError, GstcError, GstcErrorCode, GstdErrorCode
 from pygstc.logger import DummyLogger
 from pygstc.tcp import Ipc
 
@@ -183,7 +183,7 @@ class GstdClient:
                 raise GstcError(
                     "%s TypeError: parameter %i: expected %s, '%s found" %
                     (inspect.stack()[1].function, i, type_list[i],
-                     type(parameter)), -6)
+                     type(parameter)), GstcErrorCode.GSTC_MALFORMED)
             if type_list[i] == str:
                 parameter_string_list += [parameter]
             elif type_list[i] == bool:
@@ -223,10 +223,12 @@ class GstdClient:
             if result['code'] != 0:
                 self._logger.error('%s error: %s' % (cmd,
                                                      result['description']))
-                raise GstcError(result['description'], -7)
+                raise GstcError(result['description'],
+                                GstcErrorCode.GSTC_NOT_FOUND)
             return result
         except ConnectionRefusedError as e:
-            raise GstdError("Failed to communicate with GSTD", 15)\
+            raise GstdError("Failed to communicate with GSTD",
+                            GstdErrorCode.GSTD_IPC_ERROR)\
                 from e
         except TypeError as e:
             raise GstcError('Bad command', -1) from e
@@ -250,14 +252,17 @@ class GstdClient:
             result = json.loads(jresult)
             if ('description' in result and
                result['description'] != 'Success'):
-                raise GstdError("GStreamer Daemon bad response", 15)
+                raise GstdError("GStreamer Daemon bad response",
+                                GstdErrorCode.GSTD_IPC_ERROR)
 
         except json.JSONDecodeError as e:
             self._logger.error('GStreamer Daemon corrupted response')
-            raise GstcError("GStreamer Daemon corrupted response", 13) from e
+            raise GstcError("GStreamer Daemon corrupted response",
+                            GstcErrorCode.GSTC_MALFORMED) from e
         except ConnectionRefusedError as e:
             self._logger.error('Error contacting GST Daemon')
-            raise GstdError('Error contacting GST Daemon', 15) from e
+            raise GstcError('Error contacting GST Daemon',
+                            GstcErrorCode.GSTC_UNREACHABLE) from e
 
     def bus_filter(self, pipe_name, filter):
         """

@@ -28,6 +28,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from enum import Enum
 
 """
 GSTC - GstClientError Class
@@ -47,7 +48,6 @@ class GstClientError(Exception):
         Attributes:
             description -- GstClient error description message
         """
-        super(GstClientError, self).__init__(description, code)
         self.description = description
         self.code = code
 
@@ -62,12 +62,12 @@ class GstdError(GstClientError):
 
     def __init__(self, description, code):
         """
-        Initialize new GstcError
+        Initialize new GstdError
 
         Parameters
         ----------
         Attributes:
-            description : GstcError description message
+            description : GstdError description message
             code : Error code
         """
         super(GstdError, self).__init__(description, code)
@@ -92,3 +92,54 @@ class GstcError(GstClientError):
             code : Error code
         """
         super(GstcError, self).__init__(description, code)
+
+
+"""
+GSTC - GstcErrorCode Class
+Representation for error codes
+"""
+
+
+class GstcErrorCode(Enum):
+    GSTC_OK = 0
+    GSTC_NULL_ARGUMENT = -1
+    GSTC_UNREACHABLE = -2
+    GSTC_TIMEOUT = -3
+    GSTC_OOM = -4
+    GSTC_TYPE_ERROR = -5
+    GSTC_MALFORMED = -6
+    GSTC_NOT_FOUND = -7
+    GSTC_SEND_ERROR = -8
+    GSTC_RECV_ERROR = -9
+    GSTC_SOCKET_ERROR = -10
+    GSTC_THREAD_ERROR = -11
+    GSTC_BUS_TIMEOUT = -12
+    GSTC_SOCKET_TIMEOUT = -13
+
+
+"""
+GSTC - GstdErrorCode Class
+Representation for error codes
+"""
+
+
+class GstdErrorCode(Enum):
+    GSTD_EOK = 0
+    GSTD_NULL_ARGUMENT = 1
+    GSTD_BAD_DESCRIPTION = 2
+    GSTD_EXISTING_NAME = 3
+    GSTD_MISSING_INITIALIZATION = 4
+    GSTD_NO_PIPELINE = 5
+    GSTD_NO_RESOURCE = 6
+    GSTD_NO_CREATE = 7
+    GSTD_EXISTING_RESOURCE = 8
+    GSTD_NO_UPDATE = 9
+    GSTD_BAD_COMMAND = 10
+    GSTD_NO_READ = 11
+    GSTD_NO_CONNECTION = 12
+    GSTD_BAD_VALUE = 13
+    GSTD_STATE_ERROR = 14
+    GSTD_IPC_ERROR = 15
+    GSTD_EVENT_ERROR = 16
+    GSTD_MISSING_ARGUMENT = 17
+    GSTD_MISSING_NAME = 18
