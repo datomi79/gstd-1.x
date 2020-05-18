@@ -238,7 +238,7 @@ class GstdClient:
                             'than the maximum size allowed',
                             GstcErrorCode.GSTC_SEND_ERROR) from e
         except TimeoutError as e:
-            raise GstcError('Gst Client time our ocurred',
+            raise GstcError('Gst Client time out ocurred',
                             GstcErrorCode.GSTC_SEND_ERROR) from e
 
     def ping_gstd(self):

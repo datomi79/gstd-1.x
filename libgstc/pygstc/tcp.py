@@ -164,21 +164,25 @@ class Ipc:
         newbuf = ''
         try:
             sock.settimeout(timeout)
-            while True:
-                if (self._maxsize and self._maxsize > len(newbuf)):
-                    raise BufferError
-                # Timeout to perform non-blocking read
-                ready = select.select([sock], [], [], timeout)
-
-                if ready[0]:
-                    newbuf = sock.recv(self._socket_read_size)
-                    if self._terminator in newbuf:
-                        buf += newbuf[:newbuf.find(self._terminator)]
-                        break
-                    else:
-                        buf += newbuf
-            return buf
-
-        # Raise an exception timeout
         except socket.error as e:
             raise TimeoutError from e
+
+        while True:
+            if (self._maxsize and self._maxsize > len(newbuf)):
+                raise BufferError
+            # Timeout to perform non-blocking read
+            ready = select.select([sock], [], [], timeout)
+
+            if ready[0]:
+                try:
+                    newbuf = sock.recv(self._socket_read_size)
+                # Raise an exception timeout
+                except socket.error as e:
+                    raise TimeoutError from e
+
+                if self._terminator in newbuf:
+                    buf += newbuf[:newbuf.find(self._terminator)]
+                    break
+                else:
+                    buf += newbuf
+        return buf
