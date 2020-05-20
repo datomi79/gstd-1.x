@@ -34,6 +34,16 @@ class GstdClient {
     this.port = port;
   }
 
+  static send_cmd(http, callback) {
+    if (http.readyState === XMLHttpRequest.DONE) {
+      if (http.status === 200) {
+        callback(http.responseText);
+      } else {
+        callback('Error: ' + http.status+". " + http.responseText);
+      }
+    }
+  }
+
   list_pipelines(callback) {
 
     if (typeof callback !== "function"){
@@ -44,14 +54,8 @@ class GstdClient {
     var http = new XMLHttpRequest();
     http.open('GET', this.ip + ":" + this.port + "/pipelines");
     http.send();
-    http.onreadystatechange = function () {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        if (http.status === 200) {
-          callback(http.responseText);
-        } else {
-          callback('Error: ' + http.status+". " + http.responseText);
-        }
-      }
+    http.onreadystatechange = function (){
+      GstdClient.send_cmd(http, callback);
     }
   }
 
@@ -70,14 +74,8 @@ class GstdClient {
       description: pipe_desc
     });
     http.send(jpipe);
-    function alertContents() {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        if (http.status === 200) {
-          callback(http.responseText)
-        } else {
-          callback('Error: ' + http.status+". " + http.responseText);
-        }
-      }
+    http.onreadystatechange = function (){
+      GstdClient.send_cmd(http, callback);
     }
   }
   pipeline_play(pipe_name, callback){
@@ -94,14 +92,8 @@ class GstdClient {
       name: "playing"
     });
     http.send(jpipe);
-    function alertContents() {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        if (http.status === 200) {
-          callback(http.responseText)
-        } else {
-          callback('Error: ' + http.status+". " + http.responseText);
-        }
-      }
+    http.onreadystatechange = function (){
+      GstdClient.send_cmd(http, callback);
     }
   }
 
@@ -119,16 +111,10 @@ class GstdClient {
       name: "paused"
     });
     http.send(jpipe);
-    function alertContents() {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        if (http.status === 200) {
-          callback(http.responseText)
-        } else {
-          callback('Error: ' + http.status+". " + http.responseText);
-        }
-      }
+    http.onreadystatechange = function (){
+      GstdClient.send_cmd(http, callback);
     }
-   }
+  }
 
   pipeline_pause(pipe_name, callback){
 
@@ -144,14 +130,8 @@ class GstdClient {
       name: "paused"
     });
     http.send(jpipe);
-    function alertContents() {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        if (http.status === 200) {
-          callback(http.responseText)
-        } else {
-          callback('Error: ' + http.status+". " + http.responseText);
-        }
-      }
+    http.onreadystatechange = function (){
+      GstdClient.send_cmd(http, callback);
     }
   }
 
@@ -169,14 +149,8 @@ class GstdClient {
       name: "null"
     });
     http.send(jpipe);
-    function alertContents() {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        if (http.status === 200) {
-          callback(http.responseText)
-        } else {
-          callback('Error: ' + http.status+". " + http.responseText);
-        }
-      }
+    http.onreadystatechange = function (){
+      GstdClient.send_cmd(http, callback);
     }
   }
 
@@ -194,14 +168,8 @@ class GstdClient {
       name: pipe_name
     });
     http.send(jpipe);
-    function alertContents() {
-      if (http.readyState === XMLHttpRequest.DONE) {
-        if (http.status === 200) {
-          callback(http.responseText)
-        } else {
-          callback('Error: ' + http.status+". " + http.responseText);
-        }
-      }
+    http.onreadystatechange = function (){
+      GstdClient.send_cmd(http, callback);
     }
   }
 }
