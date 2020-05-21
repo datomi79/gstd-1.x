@@ -1,5 +1,5 @@
 // GStreamer Daemon - gst-launch on steroids
-// Python client library abstracting gstd interprocess communication
+// JavaScript client library abstracting gstd interprocess communication
 
 // Copyright (c) 2015-2020 RidgeRun, LLC (http://www.ridgerun.com)
 
@@ -44,10 +44,17 @@ class GstdClient {
     }
   }
 
+  static check_callback(callback) {
+    if (typeof callback !== "function"){
+      console.error ("Provide a callback function");
+      return false;
+    }
+    return true;
+  }
+
   list_pipelines(callback) {
 
-    if (typeof callback !== "function"){
-      console.error ("Provide an callback function")
+    if(!GstdClient.check_callback(callback)) {
       return TypeError;
     }
 
@@ -61,13 +68,11 @@ class GstdClient {
 
   pipeline_create(pipe_name, pipe_desc, callback){
 
-    if (typeof callback !== "function"){
-      console.error ("Provide an callback function")
+    if(!GstdClient.check_callback(callback)) {
       return TypeError;
     }
 
     var http = new XMLHttpRequest();
-    http.onreadystatechange = alertContents;
     http.open('POST', this.ip + ":" + this.port + "/pipelines?name="+pipe_name+"&description="+pipe_desc);
     let jpipe = JSON.stringify({
       name: pipe_name,
@@ -78,15 +83,14 @@ class GstdClient {
       GstdClient.send_cmd(http, callback);
     }
   }
+
   pipeline_play(pipe_name, callback){
 
-    if (typeof callback !== "function"){
-      console.error ("Provide an callback function")
+    if(!GstdClient.check_callback(callback)) {
       return TypeError;
     }
 
     var http = new XMLHttpRequest();
-    http.onreadystatechange = alertContents;
     http.open('PUT', this.ip + ":" + this.port + "/pipelines/"+pipe_name+"/state?name=playing");
     let jpipe = JSON.stringify({
       name: "playing"
@@ -99,13 +103,11 @@ class GstdClient {
 
   element_set(pipe_name, element, prop, value, callback){
 
-    if (typeof callback !== "function"){
-      console.error ("Provide an callback function")
+    if(!GstdClient.check_callback(callback)) {
       return TypeError;
     }
 
     var http = new XMLHttpRequest();
-    http.onreadystatechange = alertContents;
     http.open('PUT', this.ip + ":" + this.port + "/pipelines/"+pipe_name+"/elements/"+element+"/properties/"+prop+"?name="+value);
     let jpipe = JSON.stringify({
       name: "paused"
@@ -118,13 +120,11 @@ class GstdClient {
 
   pipeline_pause(pipe_name, callback){
 
-    if (typeof callback !== "function"){
-      console.error ("Provide an callback function")
+    if(!GstdClient.check_callback(callback)) {
       return TypeError;
     }
 
     var http = new XMLHttpRequest();
-    http.onreadystatechange = alertContents;
     http.open('PUT', this.ip + ":" + this.port + "/pipelines/"+pipe_name+"/state?name=paused");
     let jpipe = JSON.stringify({
       name: "paused"
@@ -137,13 +137,11 @@ class GstdClient {
 
   pipeline_stop(pipe_name, callback){
 
-    if (typeof callback !== "function"){
-      console.error ("Provide an callback function")
+    if(!GstdClient.check_callback(callback)) {
       return TypeError;
     }
 
     var http = new XMLHttpRequest();
-    http.onreadystatechange = alertContents;
     http.open('PUT', this.ip + ":" + this.port + "/pipelines/"+pipe_name+"/state?name=null");
     let jpipe = JSON.stringify({
       name: "null"
@@ -156,13 +154,11 @@ class GstdClient {
 
   pipeline_delete(pipe_name, callback){
 
-    if (typeof callback !== "function"){
-      console.error ("Provide an callback function")
+    if(!GstdClient.check_callback(callback)) {
       return TypeError;
     }
 
     var http = new XMLHttpRequest();
-    http.onreadystatechange = alertContents;
     http.open('DELETE', this.ip + ":" + this.port + "/pipelines?name="+pipe_name);
     let jpipe = JSON.stringify({
       name: pipe_name
