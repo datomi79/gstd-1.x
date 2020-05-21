@@ -64,7 +64,7 @@ G_DEFINE_TYPE (GstdHttp, gstd_http, GSTD_TYPE_IPC);
 
 /* VTable */
 
-static void gstd_http_dispose (GObject *);
+static void gstd_http_finalize (GObject *);
 static GstdReturnCode gstd_http_start (GstdIpc * base, GstdSession * session);
 static GstdReturnCode gstd_http_stop (GstdIpc * base);
 static gboolean gstd_http_init_get_option_group (GstdIpc * base,
@@ -93,7 +93,7 @@ gstd_http_class_init (GstdHttpClass * klass)
   gstdipc_class->get_option_group =
       GST_DEBUG_FUNCPTR (gstd_http_init_get_option_group);
   gstdipc_class->start = GST_DEBUG_FUNCPTR (gstd_http_start);
-  object_class->dispose = gstd_http_dispose;
+  object_class->finalize = gstd_http_finalize;
   gstdipc_class->stop = GST_DEBUG_FUNCPTR (gstd_http_stop);
 
   /* Initialize debug category with nice colors */
@@ -112,7 +112,7 @@ gstd_http_init (GstdHttp * self)
 }
 
 static void
-gstd_http_dispose (GObject * object)
+gstd_http_finalize (GObject * object)
 {
   GstdHttp *self = GSTD_HTTP (object);
 
@@ -121,8 +121,9 @@ gstd_http_dispose (GObject * object)
   if (self->address) {
     g_free (self->address);
   }
+  self->address = NULL;
 
-  G_OBJECT_CLASS (gstd_http_parent_class)->dispose (object);
+  G_OBJECT_CLASS (gstd_http_parent_class)->finalize (object);
 }
 
 static SoupStatus
